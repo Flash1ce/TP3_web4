@@ -1,0 +1,101 @@
+{
+    "jsoncommandeSchema":{
+        "type": "object",
+        "properties": {
+            "_id": {
+                "type": "string"
+            },
+            "DateArrivee": {
+                "type": "date"
+            },
+            "Livreur":{
+                "type":"object",
+                "properties":{
+                    "_id": "string",
+                    "Nom": "string",
+                    "Prenom": "string",
+                    "Voiture": "string",
+                    "Quartier": "string"
+                },
+                "required": ["Nom","Prenom","Voiture","Quartier"]
+            },
+            "Usager": {
+                "type": "object",
+                "properties": {      
+                    "Nom": "string",
+                    "Prenom": "string",
+                    "Adresse": "string",
+                    "Pseudo": "string",
+                    "MotDePasse": "string"
+                },
+                "required": ["Nom", "Prenom", "Adresse", "Pseudo", "MotDePasse"]
+            },
+            "Plats": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "Nom": "string",
+                        "NbrPortions": "number"
+                    },
+                    "required": ["Nom", "NbrPortions"]
+                }
+            }
+        },
+        "required":["DateArrivee"]
+    },
+    "jsonlivreurSchema": {
+        "type":"object",
+        "properties":{
+            "_id": {
+                "type": "string"
+            },
+            "Nom": {
+                "type": "string"
+            },
+            "Prenom": {
+                "type": "string"
+            },
+            "Voiture": {
+                "type": "string"
+            },
+            "Quartier": {
+                "type": "string"
+            }
+        },
+        "required": ["Nom","Prenom","Voiture","Quartier"]
+    },
+    "jsonplatsSchema": {
+        "type": "object",
+        "properties": {
+            "Nom": {
+                "type": "string"
+            },
+            "NbrPortions": {
+                "type": "number"
+            }
+        },
+        "required": ["Nom", "NbrPortions"]
+    },
+    "jsonusagerSchema": {
+        "type": "object",
+        "properties": {
+            "Nom": {
+                "type": "string"
+            },
+            "Prenom": {
+                "type": "string"
+            },
+            "Adresse": {
+                "type": "string"
+            },
+            "Pseudo": {
+                "type": "string"
+            },
+            "MotDePasse": {
+                "type": "string"
+            }
+        },
+        "required": ["Nom", "Prenom", "Adresse", "Pseudo", "MotDePasse"]
+    }
+}

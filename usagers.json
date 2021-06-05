@@ -1,0 +1,21 @@
+[{
+  "_id": {
+    "$oid": "6089735911d487119080c7c1"
+  },
+  "Nom": "Levesque",
+  "Prenom": "Anthony",
+  "Adresse": "1325 Rue Alegro",
+  "Pseudo": "Water",
+  "MotDePasse": "1234",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60a18c1ab542fd079c24d779"
+  },
+  "Nom": "Bedard",
+  "Prenom": "Maude",
+  "Adresse": "2342 Rue de la rue",
+  "Pseudo": "roger",
+  "MotDePasse": "1212",
+  "__v": 0
+}]

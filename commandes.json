@@ -1,0 +1,21 @@
+[{
+  "_id": {
+    "$oid": "609bf5cce1716c3a20475abd"
+  },
+  "DateArrivee": {
+    "$date": "2021-01-01T00:00:00Z"
+  },
+  "Usager": {
+    "_id": {
+      "$oid": "6089735911d487119080c7c1"
+    },
+    "Nom": "Levesque",
+    "Prenom": "Anthony",
+    "Adresse": "1325 Rue Alegro",
+    "Pseudo": "Water",
+    "MotDePasse": "1234",
+    "__v": 0
+  },
+  "Plats": [],
+  "__v": 0
+}]

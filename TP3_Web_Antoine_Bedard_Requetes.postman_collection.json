@@ -1,0 +1,4185 @@
+{
+	"info": {
+		"_postman_id": "f059e765-e7e4-4d07-8fef-c158065cad85",
+		"name": "TP3_Web_Antoine_Bedard_Requetes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Usager CRUD",
+			"item": [
+				{
+					"name": "Création usager (erreur)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validation si le code est bien 400.\r",
+									"pm.test(\"Status code est 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"// Validation que le body soi bien vide.\r",
+									"pm.test(\"Body est vide\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Nom\": \"Légaré\",\r\n    \"Prenom\": \"David\",\r\n    \"Adresse\": \"2342 Rue Esplanade\",\r\n    \"MotDePasse\": \"4563\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/usagers",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Création usager (Réussie)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validation si le code est bien 201.\r",
+									"pm.test(\"Status code est 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type est present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// Vérification si le content-type est le bon.\r",
+									"pm.test(\"Vérification content-type = application/json; charset=utf-8\", function () {\r",
+									"    var contentType = pm.response.headers.get(\"Content-Type\");\r",
+									"    pm.expect(contentType).to.eql(\"application/json; charset=utf-8\");\r",
+									"});\r",
+									"\r",
+									"var usager = pm.response.json(); // Récupération de l'objet usager.\r",
+									"\r",
+									"// Chargement du schema json dans l'environement.\r",
+									"var jsonSchemaUsager = JSON.parse(pm.environment.get(\"json_schema_usager\"));\r",
+									"\r",
+									"// Validation selon le schéma de données JSON.\r",
+									"tests[\"JSON respecte le schéma pour un usager\"] = tv4.validate(usager, jsonSchemaUsager);\r",
+									"if (tv4.error !== null)\r",
+									"    console.log(\"Message de validation schéma JSON usager) : \", tv4.error);\r",
+									"\r",
+									"// sauvegarde de l'id de l'utilisateur créé.\r",
+									"pm.environment.set(\"id_dern_usager_créé\", usager._id.toString());\r",
+									"\r",
+									"// Validation des value de l'objet retourner.\r",
+									"pm.test(\"Vérification du nom.\", function () {\r",
+									"    pm.expect(usager.Nom).to.eql(\"Légaré\");\r",
+									"});\r",
+									"pm.test(\"Vérification du Prenom.\", function () {\r",
+									"    pm.expect(usager.Prenom).to.eql(\"David\");\r",
+									"});\r",
+									"pm.test(\"Vérification du mdp, Pseudo, Adresse.\", function () {\r",
+									"    pm.expect(usager.Adresse).to.eql(\"2342 Rue Esplanade\");\r",
+									"    pm.expect(usager.Pseudo).to.eql(\"DavidFlameur\");\r",
+									"    pm.expect(usager.MotDePasse).to.eql(\"4563\");\r",
+									"\r",
+									"});\r",
+									"\r",
+									"// Validation de la location\r",
+									"pm.test(\"Validation de la location\", function () {\r",
+									"    pm.response.to.have.header(\"Location\");\r",
+									"    pm.environment.get('url_base') + \"/usagers/\" + usager._id.toString();\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Nom\": \"Légaré\",\r\n    \"Prenom\": \"David\",\r\n    \"Adresse\": \"2342 Rue Esplanade\",\r\n    \"Pseudo\": \"DavidFlameur\",\r\n    \"MotDePasse\": \"4563\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/usagers",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "usager connecter ne corespond pas a l'id fournis.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// vérification que l'usager ne peut pas accèder a un autres usager.\r",
+									"pm.test(\"Usager connecter ne corespond pas a l'id en paramètre : 403\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"\r",
+									"// Validation que le body soi bien vide.\r",
+									"pm.test(\"Le Body est vide\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation que le token a une valeur.\r",
+									"pm.test(\"Le token n'est pas vide (usager connecter).\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).not.eql(\"\");\r",
+									"});\r",
+									"\r",
+									"// Vider le token d'authentification.\r",
+									"pm.environment.set(\"token\", null);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_créé}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_créé}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "usager non connecter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// vérification usager non connecter ne peut pas accèder a un autres.\r",
+									"pm.test(\"Usager non connecter : 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"// Validation que le body soi bien vide.\r",
+									"pm.test(\"Le Body est vide\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation que le token a une valeur.\r",
+									"pm.test(\"Le token n'est pas vide.\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(null);\r",
+									"});\r",
+									"\r",
+									"// Ajout token pour l'usager par default.\r",
+									"pm.environment.set(\"token\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_créé}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_créé}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "obtenir usager (Réussie)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// vérification usager peut avoir accèes a lui.\r",
+									"pm.test(\"Usager connecter et id correspond a l'id fournis : 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type est present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// Vérification si le content-type est le bon.\r",
+									"pm.test(\"Vérification content-type = application/json; charset=utf-8\", function () {\r",
+									"    var contentType = pm.response.headers.get(\"Content-Type\");\r",
+									"    pm.expect(contentType).to.eql(\"application/json; charset=utf-8\");\r",
+									"});\r",
+									"\r",
+									"// Récupération de l'objet usager.\r",
+									"var usager = pm.response.json();\r",
+									"\r",
+									"// Chargement du schema json dans l'environement.\r",
+									"var jsonSchemaUsager = JSON.parse(pm.environment.get(\"json_schema_usager\"));\r",
+									"\r",
+									"// Validation selon le schéma de données JSON.\r",
+									"tests[\"JSON respecte le schéma pour un usager\"] = tv4.validate(usager, jsonSchemaUsager);\r",
+									"if (tv4.error !== null)\r",
+									"    console.log(\"Message de validation schéma JSON usager) : \", tv4.error);\r",
+									"\r",
+									"// Validation du nom.\r",
+									"pm.test(\"Vérification du nom.\", function () {\r",
+									"    pm.expect(usager.Nom).to.eql(\"Levesque\");\r",
+									"});\r",
+									"\r",
+									"// Validation du prenom.\r",
+									"pm.test(\"Vérification du Prenom.\", function () {\r",
+									"    pm.expect(usager.Prenom).to.eql(\"Anthony\");\r",
+									"});\r",
+									"\r",
+									"// Validation de l'adresse.\r",
+									"pm.test(\"Vérification de l'adresse.\", function () {\r",
+									"    pm.expect(usager.Adresse).to.eql(\"1325 Rue Alegro\");\r",
+									"});\r",
+									"\r",
+									"// Validation du pseudo.\r",
+									"pm.test(\"Vérification du Pseudo.\", function () {\r",
+									"    pm.expect(usager.Pseudo).to.eql(\"Water\");\r",
+									"});\r",
+									"\r",
+									"// Validation du mots de passe.\r",
+									"pm.test(\"Vérification du mot de passe..\", function () {\r",
+									"    pm.expect(usager.MotDePasse).to.eql(\"1234\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/usagers/6089735911d487119080c7c1",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"6089735911d487119080c7c1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Livreurs CRUD",
+			"item": [
+				{
+					"name": "Obtenir Livreur existant  (réussie)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Requête réussi : 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"// livreur qui est retourner.\r",
+									"var livreur = pm.response.json();\r",
+									"// chargement du schema json.\r",
+									"var jsonSchemaLivreur = JSON.parse(pm.environment.get(\"json_schema_livreur\"));\r",
+									"// Validation selon le schéma de données JSON.\r",
+									"tests[\"JSON respecte le schéma pour un livreur\"] = tv4.validate(livreur, jsonSchemaLivreur);\r",
+									"if (tv4.error !== null)\r",
+									"    console.log(\"Message de validation schéma JSON livreur) : \", tv4.error);\r",
+									"// Validation des value de l'objet retourner.\r",
+									"pm.test(\"Vérification du nom.\", function () {\r",
+									"    pm.expect(livreur.Nom).to.eql(\"Bédard\");\r",
+									"});\r",
+									"pm.test(\"Vérification de l'id.\", function () {\r",
+									"    pm.expect(livreur._id).to.eql(\"6091a607a4b2c46324cb934b\");\r",
+									"});\r",
+									"pm.test(\"Vérification du Premom\", function () {\r",
+									"    pm.expect(livreur.Prenom).to.eql(\"Antoine\");\r",
+									"});\r",
+									"pm.test(\"Vérification de la Voiture.\", function () {\r",
+									"    pm.expect(livreur.Voiture).to.eql(\"Yaris 2006 SPORT\");\r",
+									"});\r",
+									"pm.test(\"Vérification du Quartier\", function () {\r",
+									"    pm.expect(livreur.Quartier).to.eql(\"Val-Bélair\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/livreurs/:livreur_id",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"livreurs",
+								":livreur_id"
+							],
+							"variable": [
+								{
+									"key": "livreur_id",
+									"value": "6091a607a4b2c46324cb934b"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir Livreur existe pas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Aucun livreur trouver : 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Utilisateur principale est connecter.\", function () {\r",
+									"    pm.environment.set(\"token\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\")\r",
+									"});\r",
+									"// nettoyage du token.\r",
+									"pm.environment.set(\"token\", null);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/livreurs/:livreur_id",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"livreurs",
+								":livreur_id"
+							],
+							"variable": [
+								{
+									"key": "livreur_id",
+									"value": "6091a607a4b2c46324cb934z"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir Livreur existant Non Connecter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Utilisateur non connecter : code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Token vide (Non connecter)\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(null);\r",
+									"});\r",
+									"\r",
+									"// ajout d'un token valide pour l'usager principale.\r",
+									"pm.environment.set(\"token\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide ajouter\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/livreurs/:livreur_id",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"livreurs",
+								":livreur_id"
+							],
+							"variable": [
+								{
+									"key": "livreur_id",
+									"value": "6091a607a4b2c46324cb934b"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir Livreur id mauvais format",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"id invalide(mauvais format), requete invalide 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/livreurs/:livreur_id",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"livreurs",
+								":livreur_id"
+							],
+							"variable": [
+								{
+									"key": "livreur_id",
+									"value": "6091a607a4b2c46324cb934b3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crée livreur (Réussie)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"livreur est créé status code : 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"var livreur = pm.response.json(); // json livreur\r",
+									"pm.environment.set(\"id_dern_livreur_creee\", livreur._id);\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"// chargement du schema json.\r",
+									"var jsonSchemaLivreur = JSON.parse(pm.environment.get(\"json_schema_livreur\"));\r",
+									"// Validation selon le schéma de données JSON.\r",
+									"tests[\"JSON respecte le schéma pour un livreur\"] = tv4.validate(livreur, jsonSchemaLivreur);\r",
+									"if (tv4.error !== null)\r",
+									"    console.log(\"Message de validation schéma JSON livreur) : \", tv4.error);\r",
+									"// Validation des données.\r",
+									"pm.test(\"Vérification de l'id \", function () {\r",
+									"    pm.expect(livreur._id).to.eql(livreur._id.toString());\r",
+									"});\r",
+									"pm.test(\"Vérification du Nom\", function () {\r",
+									"    pm.expect(livreur.Nom).to.eql(\"Turcot\");\r",
+									"});\r",
+									"pm.test(\"Vérification du prenom\", function () {\r",
+									"    pm.expect(livreur.Prenom).to.eql(\"Boby\");\r",
+									"});\r",
+									"pm.test(\"Vérification de la voiture \", function () {\r",
+									"    pm.expect(livreur.Voiture).to.eql(\"Vélo Turbo X\");\r",
+									"});\r",
+									"pm.test(\"Vérification du Quartier\", function () {\r",
+									"    pm.expect(livreur.Quartier).to.eql(\"Neuf-Chatel\");\r",
+									"});\r",
+									"// Validation de la location\r",
+									"pm.test(\"Validation de la location\", function () {\r",
+									"    pm.response.to.have.header(\"Location\");\r",
+									"    pm.environment.get('url_base') + \"/livreurs/\" + livreur._id.toString();\r",
+									"});\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Nom\": \"Turcot\",\r\n    \"Prenom\": \"Boby\",\r\n    \"Voiture\": \"Vélo Turbo X\",\r\n    \"Quartier\": \"Neuf-Chatel\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/livreurs",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"livreurs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crée livreur (erreure)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"livreur n'est pas créé status code : 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Nom\": \"Turcot\",\r\n    \"Prenom\": \"Boby\",\r\n    \"Quartier\": \"Neuf-Chatel\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/livreurs",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"livreurs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir Livreur créé (réussie)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Obtenir nouveau livreur 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"})\r",
+									"\r",
+									"// Livreur qui est retourner.\r",
+									"var livreur = pm.response.json();\r",
+									"\r",
+									"// Importation du schéma livreur json.\r",
+									"var jsonSchemaLivreur = JSON.parse(pm.environment.get(\"json_schema_livreur\"));\r",
+									"// test du schéma.\r",
+									"tests[\"JSON respecte le schéma pour un livreur\"] = tv4.validate(livreur, jsonSchemaLivreur);\r",
+									"if (tv4.error !== null)\r",
+									"    console.log(\"Message de validation schéma JSON livreur) : \", tv4.error);\r",
+									"\r",
+									"// Validation des données.\r",
+									"pm.test(\"Vérification de l'id \", function () {\r",
+									"    pm.expect(livreur._id).to.eql(pm.environment.get(\"id_dern_livreur_creee\"));\r",
+									"});\r",
+									"pm.test(\"Vérification du Nom\", function () {\r",
+									"    pm.expect(livreur.Nom).to.eql(\"Turcot\");\r",
+									"});\r",
+									"pm.test(\"Vérification du prenom\", function () {\r",
+									"    pm.expect(livreur.Prenom).to.eql(\"Boby\");\r",
+									"});\r",
+									"pm.test(\"Vérification de la voiture \", function () {\r",
+									"    pm.expect(livreur.Voiture).to.eql(\"Vélo Turbo X\");\r",
+									"});\r",
+									"pm.test(\"Vérification du Quartier\", function () {\r",
+									"    pm.expect(livreur.Quartier).to.eql(\"Neuf-Chatel\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/livreurs/{{id_dern_livreur_creee}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"livreurs",
+								"{{id_dern_livreur_creee}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer livreur créé (réussie)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validation du code.\r",
+									"pm.test(\"Supprimer le livreur 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/livreurs/{{id_dern_livreur_creee}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"livreurs",
+								"{{id_dern_livreur_creee}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer livreur mauvaise id (erreur)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validation du code.\r",
+									"pm.test(\"Mauvais format d'id, code 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/livreurs/:livreur_id",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"livreurs",
+								":livreur_id"
+							],
+							"variable": [
+								{
+									"key": "livreur_id",
+									"value": "6089800ef749074cb423610ab",
+									"description": "Id mauvais format"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir Livreur supprimer (erreur)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Obtenir livreur supprimer 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"})\r",
+									"\r",
+									"// Vérifier que le body est vide\r",
+									"pm.test(\"Vérification que le body est vide.\", function () {\r",
+									"    pm.expect(pm.response.body).to.eql(undefined);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/livreurs/{{id_dern_livreur_creee}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"livreurs",
+								"{{id_dern_livreur_creee}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "plats CRUD",
+			"item": [
+				{
+					"name": "Obtenir un plat (réussie)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Requête réussi : 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// plat qui est retourner.\r",
+									"var plat = pm.response.json();\r",
+									"\r",
+									"// chargement du schema json.\r",
+									"var jsonSchemaPlat = JSON.parse(pm.environment.get(\"json_schema_plat\"));\r",
+									"\r",
+									"// Validation selon le schéma de données JSON.\r",
+									"tests[\"JSON respecte le schéma pour un plat\"] = tv4.validate(plat, jsonSchemaPlat);\r",
+									"if (tv4.error !== null)\r",
+									"    console.log(\"Message de validation schéma JSON plat) : \", tv4.error);\r",
+									"\r",
+									"// Validation des value de l'objet retourner.\r",
+									"pm.test(\"Vérification du nom.\", function () {\r",
+									"    pm.expect(plat.Nom).to.eql(\"Pogo\");\r",
+									"});\r",
+									"\r",
+									"// Vérification de l'id.\r",
+									"pm.test(\"Vérification de l'id.\", function () {\r",
+									"    pm.expect(plat._id).to.eql(\"609c44fe46c41c5ac44d7be3\");\r",
+									"});\r",
+									"\r",
+									"// Vérification du nombre de portion.\r",
+									"pm.test(\"Vérification du NbrPortions\", function () {\r",
+									"    pm.expect(plat.NbrPortions).to.eql(12);\r",
+									"});\r",
+									"\r",
+									"// Vérifier liens n'est pas null.\r",
+									"pm.test(\"Vérification des liens.\", function () {\r",
+									"    pm.expect(plat.links).not.eql(null);\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/plats/:id_plat",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"plats",
+								":id_plat"
+							],
+							"variable": [
+								{
+									"key": "id_plat",
+									"value": "609c44fe46c41c5ac44d7be3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir un plat id mauvais format (erreur)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"id invalide(mauvais format), requete invalide 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation que le token est valide.\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/plats/:id_plat",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"plats",
+								":id_plat"
+							],
+							"variable": [
+								{
+									"key": "id_plat",
+									"value": "609c44fe46c41c5ac44d7be3b"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir un plat (erreure) n'existe pas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Aucun plat trouver. 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation que le token est valide.\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/plats/:id_plat",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"plats",
+								":id_plat"
+							],
+							"variable": [
+								{
+									"key": "id_plat",
+									"value": "609c43fe45c41c5ac44d7ae2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Créé un plat (réussie)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Plat est créé status code : 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"// Sauvegarde de l'id du plat créé.\r",
+									"var plat = pm.response.json();\r",
+									"pm.environment.set(\"id_dern_plat_creee\", plat._id);\r",
+									"\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// chargement du schema json.\r",
+									"var jsonSchemaPlat = JSON.parse(pm.environment.get(\"json_schema_plat\"));\r",
+									"\r",
+									"// Validation selon le schéma de données JSON.\r",
+									"tests[\"JSON respecte le schéma pour un plat\"] = tv4.validate(plat, jsonSchemaPlat);\r",
+									"if (tv4.error !== null)\r",
+									"    console.log(\"Message de validation schéma JSON plat) : \", tv4.error);\r",
+									"\r",
+									"// Validation des données.\r",
+									"pm.test(\"Vérification du nom.\", function () {\r",
+									"    pm.expect(plat.Nom).to.eql(\"Steack\");\r",
+									"});\r",
+									"\r",
+									"// Vérification du nombre de portion.\r",
+									"pm.test(\"Vérification du NbrPortions\", function () {\r",
+									"    pm.expect(plat.NbrPortions).to.eql(1);\r",
+									"});\r",
+									"\r",
+									"// Vérifier liens n'est pas null.\r",
+									"pm.test(\"Vérification des liens.\", function () {\r",
+									"    pm.expect(plat.links).not.eql(null);\r",
+									"});\r",
+									"// Validation de la location\r",
+									"pm.test(\"Validation de la location\", function () {\r",
+									"    pm.response.to.have.header(\"Location\");\r",
+									"    pm.environment.get('url_base') + \"/plats/\" + plat._id.toString();\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Nom\": \"Steack\",\r\n    \"NbrPortions\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/plats",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"plats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Créé un plat (erreure)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Plat n'est créé status code : 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});\r",
+									"\r",
+									"// nettoyage du token.\r",
+									"pm.environment.set(\"token\", null);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"NbrPortions\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/plats",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"plats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Créé un plat (erreure) non connecté",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Usager non connecté status code : 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Aucun Token\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(null);\r",
+									"});\r",
+									"\r",
+									"// ajout d'un token valide pour l'usager principale.\r",
+									"pm.environment.set(\"token\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide ajouter\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Nom\": \"Steack\",\r\n    \"NbrPortions\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/plats",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"plats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir plats créé (réussie)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Requête réussi : 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// plat qui est retourner.\r",
+									"var plat = pm.response.json();\r",
+									"\r",
+									"// chargement du schema json.\r",
+									"var jsonSchemaPlat = JSON.parse(pm.environment.get(\"json_schema_plat\"));\r",
+									"\r",
+									"// Validation selon le schéma de données JSON.\r",
+									"tests[\"JSON respecte le schéma pour un plat\"] = tv4.validate(plat, jsonSchemaPlat);\r",
+									"if (tv4.error !== null)\r",
+									"    console.log(\"Message de validation schéma JSON plat) : \", tv4.error);\r",
+									"\r",
+									"// Validation des value de l'objet retourner.\r",
+									"pm.test(\"Vérification du nom.\", function () {\r",
+									"    pm.expect(plat.Nom).to.eql(\"Steack\");\r",
+									"});\r",
+									"\r",
+									"// Vérification de l'id.\r",
+									"pm.test(\"Vérification de l'id.\", function () {\r",
+									"    pm.expect(plat._id).to.eql(pm.environment.get(\"id_dern_plat_creee\"));\r",
+									"});\r",
+									"\r",
+									"// Vérification du nombre de portion.\r",
+									"pm.test(\"Vérification du NbrPortions\", function () {\r",
+									"    pm.expect(plat.NbrPortions).to.eql(1);\r",
+									"});\r",
+									"\r",
+									"// Vérifier liens n'est pas null.\r",
+									"pm.test(\"Vérification des liens.\", function () {\r",
+									"    pm.expect(plat.links).not.eql(null);\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/plats/{{id_dern_plat_creee}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"plats",
+								"{{id_dern_plat_creee}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir tous les plats chess.com",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Requête réussi : 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Vérification Access-Control-Allow-Origin\r",
+									"pm.test(\"Access-Control-Allow-Origin est présent\", function () {\r",
+									"    pm.response.to.have.header(\"Access-Control-Allow-Origin\");\r",
+									"});\r",
+									"// Vérification est le bon origin\r",
+									"pm.test(\"Origin est chess.com\", function () {\r",
+									"    var ACAO = pm.response.headers.get(\"Access-Control-Allow-Origin\");\r",
+									"    pm.expect(ACAO).to.eql(\"https://www.chess.com\");\r",
+									"});\r",
+									"\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// plat qui est retourner.\r",
+									"var plats = pm.response.json();\r",
+									"\r",
+									"// Vérifier plats n'est pas null.\r",
+									"pm.test(\"Vérification list plats n'est pas null..\", function () {\r",
+									"    pm.expect(plats).not.eql(null);\r",
+									"});\r",
+									"\r",
+									"// Validation 2 plats est retourner.\r",
+									"pm.test(\"Vérification qu'il y a 2 plats de retourner.\", function () {\r",
+									"     pm.expect(Object.keys(plats).length).to.eql(2);\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Origin",
+								"value": "https://www.chess.com",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url_base}}/plats",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"plats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir tous les plats delirescalade.com",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Requête réussi : 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Vérification Access-Control-Allow-Origin\r",
+									"pm.test(\"Access-Control-Allow-Origin est présent\", function () {\r",
+									"    pm.response.to.have.header(\"Access-Control-Allow-Origin\");\r",
+									"});\r",
+									"// Vérification est le bon origin\r",
+									"pm.test(\"Origin est delirescalade.com\", function () {\r",
+									"    var ACAO = pm.response.headers.get(\"Access-Control-Allow-Origin\");\r",
+									"    pm.expect(ACAO).to.eql(\"https://www.delirescalade.com\");\r",
+									"});\r",
+									"\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// plat qui est retourner.\r",
+									"var plats = pm.response.json();\r",
+									"\r",
+									"// Vérifier plats n'est pas null.\r",
+									"pm.test(\"Vérification list plats n'est pas null..\", function () {\r",
+									"    pm.expect(plats).not.eql(null);\r",
+									"});\r",
+									"\r",
+									"// Validation 2 plats est retourner.\r",
+									"pm.test(\"Vérification qu'il y a 2 plats de retourner.\", function () {\r",
+									"     pm.expect(Object.keys(plats).length).to.eql(2);\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Origin",
+								"value": "https://www.delirescalade.com",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url_base}}/plats",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"plats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir tous les plats cegepgarneau.omnivox.ca",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Requête réussi : 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Vérification Access-Control-Allow-Origin\r",
+									"pm.test(\"Access-Control-Allow-Origin est présent\", function () {\r",
+									"    pm.response.to.have.header(\"Access-Control-Allow-Origin\");\r",
+									"});\r",
+									"// Vérification est le bon origin\r",
+									"pm.test(\"Origin est cegepgarneau.omnivox.ca\", function () {\r",
+									"    var ACAO = pm.response.headers.get(\"Access-Control-Allow-Origin\");\r",
+									"    pm.expect(ACAO).to.eql(\"https://cegepgarneau.omnivox.ca\");\r",
+									"});\r",
+									"\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// plat qui est retourner.\r",
+									"var plats = pm.response.json();\r",
+									"\r",
+									"// Vérifier plats n'est pas null.\r",
+									"pm.test(\"Vérification list plats n'est pas null..\", function () {\r",
+									"    pm.expect(plats).not.eql(null);\r",
+									"});\r",
+									"\r",
+									"// Validation 2 plats est retourner.\r",
+									"pm.test(\"Vérification qu'il y a 2 plats de retourner.\", function () {\r",
+									"     pm.expect(Object.keys(plats).length).to.eql(2);\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Origin",
+								"value": "https://cegepgarneau.omnivox.ca",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url_base}}/plats",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"plats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir tous les plats (erreur, pas d'origin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"CORS a bloquer la requete : 500\", function () {\r",
+									"    pm.response.to.have.status(500);\r",
+									"});\r",
+									"\r",
+									"// Vérification Access-Control-Allow-Origin\r",
+									"pm.test(\"Access-Control-Allow-Origin n'est pas présent\", function () {\r",
+									"    var ACAO = pm.response.headers.get(\"Access-Control-Allow-Origin\");\r",
+									"    pm.expect(ACAO).to.eql(undefined);\r",
+									"});\r",
+									"\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type est present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/plats",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"plats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer plat créé",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validation du code.\r",
+									"pm.test(\"Supprimer le plat 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/plats/{{id_dern_plat_creee}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"plats",
+								"{{id_dern_plat_creee}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer plat créé (erreure) id invalide",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validation du code.\r",
+									"pm.test(\"Requete invalide 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/plats/:id_plat",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"plats",
+								":id_plat"
+							],
+							"variable": [
+								{
+									"key": "id_plat",
+									"value": "609c44fe46c41c5ac44d7be3b"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Connexion",
+			"item": [
+				{
+					"name": "Connexion (échec)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validation si le code est bien 400.\r",
+									"pm.test(\"Status code est 400 (bad request)\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"// Validation que le body soi bien vide. donc pas de token retourner.\r",
+									"pm.test(\"Body est vide, Pas de token retourner.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Nom\": \"Frenette\",\r\n    \"Prenom\": \"Boby\",\r\n    \"Adresse\": \"4125 Rue Montolieu\",\r\n    \"Pseudo\": \"Roger_Gros_Bras\",\r\n    \"MotDePasse\": \"13234\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/connexions",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"connexions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Connexion (réussie)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validation si le code est bien 201.\r",
+									"pm.test(\"Status code est 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"// Récupération du token.\r",
+									"var token = pm.response.json();\r",
+									"\r",
+									"// Validation que le token ne soit pas vide.\r",
+									"pm.test(\"Le Token n'est pas vide.\", function () {\r",
+									"    pm.expect(token).not.eql(null);\r",
+									"});\r",
+									"\r",
+									"// Validation du Token.\r",
+									"pm.test(\"Vérification que le token retourner est différent.\", function () {\r",
+									"    pm.expect(token).not.eql(pm.environment.get(\"token\"));\r",
+									"});\r",
+									"\r",
+									"// Sauvegarde du nouveau token.\r",
+									"pm.environment.set(\"token\", token.token);\r",
+									"\r",
+									"pm.environment.set(\"id_dern_usager_connecter\", \"6089735911d487119080c7c1\")\r",
+									"// Validation du Token.\r",
+									"pm.test(\"Vérification du Token a changer.\", function () {\r",
+									"    pm.expect(token.token).to.eql(pm.environment.get(\"token\"));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Nom\": \"Levesque\",\r\n    \"Prenom\": \"Anthony\",\r\n    \"Adresse\": \"1325 Rue Alegro\",\r\n    \"Pseudo\": \"Water\",\r\n    \"MotDePasse\": \"1234\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/connexions",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"connexions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Consulter usager connecter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// vérification usager peut avoir accèes a lui.\r",
+									"pm.test(\"Usager connecter et id correspond a l'id fournis : 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type est present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// Vérification si le content-type est le bon.\r",
+									"pm.test(\"Vérification content-type = application/json; charset=utf-8\", function () {\r",
+									"    var contentType = pm.response.headers.get(\"Content-Type\");\r",
+									"    pm.expect(contentType).to.eql(\"application/json; charset=utf-8\");\r",
+									"});\r",
+									"\r",
+									"// Récupération de l'objet usager.\r",
+									"var usager = pm.response.json();\r",
+									"\r",
+									"// Chargement du schema json dans l'environement.\r",
+									"var jsonSchemaUsager = JSON.parse(pm.environment.get(\"json_schema_usager\"));\r",
+									"\r",
+									"// Validation selon le schéma de données JSON.\r",
+									"tests[\"JSON respecte le schéma pour un usager\"] = tv4.validate(usager, jsonSchemaUsager);\r",
+									"if (tv4.error !== null)\r",
+									"    console.log(\"Message de validation schéma JSON usager) : \", tv4.error);\r",
+									"\r",
+									"// Validation du nom.\r",
+									"pm.test(\"Vérification du nom.\", function () {\r",
+									"    pm.expect(usager.Nom).to.eql(\"Levesque\");\r",
+									"});\r",
+									"\r",
+									"// Validation du prenom.\r",
+									"pm.test(\"Vérification du Prenom.\", function () {\r",
+									"    pm.expect(usager.Prenom).to.eql(\"Anthony\");\r",
+									"});\r",
+									"\r",
+									"// Validation de l'adresse.\r",
+									"pm.test(\"Vérification de l'adresse.\", function () {\r",
+									"    pm.expect(usager.Adresse).to.eql(\"1325 Rue Alegro\");\r",
+									"});\r",
+									"\r",
+									"// Validation du pseudo.\r",
+									"pm.test(\"Vérification du Pseudo.\", function () {\r",
+									"    pm.expect(usager.Pseudo).to.eql(\"Water\");\r",
+									"});\r",
+									"\r",
+									"// Validation du mots de passe.\r",
+									"pm.test(\"Vérification du mot de passe..\", function () {\r",
+									"    pm.expect(usager.MotDePasse).to.eql(\"1234\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Consulter usager mauvais iD",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validation si le code est bien 403.\r",
+									"pm.test(\"Status code est 403\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"\r",
+									"// Validation que le body soi bien vide.\r",
+									"pm.test(\"Body est vide, Pas de usager retourner.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Ajout token pour l'usager par default.\r",
+									"pm.environment.set(\"token\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/usagers/6089735911d487119080c7c2",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"6089735911d487119080c7c2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Commande CRUD",
+			"item": [
+				{
+					"name": "Création commande",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Commande est créé status code : 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"// Sauvegarde de l'id de la commande créé.\r",
+									"var commande = pm.response.json();\r",
+									"pm.environment.set(\"id_dern_commande_creee\", commande._id);\r",
+									"\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// chargement du schema json.\r",
+									"var jsonSchemaCommand = JSON.parse(pm.environment.get(\"json_schema_commande\"));\r",
+									"\r",
+									"// Validation selon le schéma de données JSON.\r",
+									"tests[\"JSON respecte le schéma pour une commande\"] = tv4.validate(jsonSchemaCommand, commande);\r",
+									"if (tv4.error !== null)\r",
+									"    console.log(\"Message de validation schéma JSON commande) : \", tv4.error);\r",
+									"\r",
+									"// Validation des données.\r",
+									"pm.test(\"Vérification de la DateArrivee.\", function () {\r",
+									"    pm.expect(new Date(commande.DateArrivee)).to.eql(new Date(\"2021-01-01\"));\r",
+									"});\r",
+									"\r",
+									"// Validation de l'usager.\r",
+									"pm.test(\"Vérification de l'usager.\", function () {\r",
+									"    pm.expect(commande.Usager._id).to.eql(pm.environment.get(\"id_dern_usager_connecter\"));\r",
+									"});\r",
+									"\r",
+									"// Vérification des Plats.\r",
+									"pm.test(\"Vérification du nombre de Plats.\", function () {\r",
+									"    pm.expect(Object.keys(commande.Plats).length).to.eql(0);\r",
+									"});\r",
+									"\r",
+									"// Validation de la location\r",
+									"pm.test(\"Validation de la location\", function () {\r",
+									"    pm.response.to.have.header(\"Location\");\r",
+									"    pm.environment.get('url_base') + \"/commandes/\" + commande._id.toString();\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"DateArrivee\": \"2021-01-01\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Création commande (erreure)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Commande n'est pas créé status code : 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Consulter une commande (réussie)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Requête réussi : 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// Commande qui est retourner.\r",
+									"var commande = pm.response.json();\r",
+									"\r",
+									"// chargement du schema json.\r",
+									"var jsonSchemaCommande = JSON.parse(pm.environment.get(\"json_schema_commande\"));\r",
+									"\r",
+									"// Validation selon le schéma de données JSON.\r",
+									"tests[\"JSON respecte le schéma pour une commande\"] = tv4.validate(jsonSchemaCommande, commande);\r",
+									"if (tv4.error !== null)\r",
+									"    console.log(\"Message de validation schéma JSON commande) : \", tv4.error);\r",
+									"\r",
+									"// Validation des value de l'objet retourner.\r",
+									"pm.test(\"Vérification de la DateArrivee.\", function () {\r",
+									"    pm.expect(new Date(commande.DateArrivee)).to.eql(new Date(\"2021-01-01\"));\r",
+									"});\r",
+									"\r",
+									"// Vérification de l'id.\r",
+									"pm.test(\"Vérification de l'id.\", function () {\r",
+									"    pm.expect(commande._id).to.eql(pm.environment.get(\"id_dern_commande_creee\"));\r",
+									"});\r",
+									"\r",
+									"// Vérification de l'usager id.\r",
+									"pm.test(\"Vérification de l'usager id.\", function () {\r",
+									"    pm.expect(commande.Usager._id).to.eql(pm.environment.get(\"id_dern_usager_connecter\"));\r",
+									"});\r",
+									"\r",
+									"// Vérification du nom de l'usager.\r",
+									"pm.test(\"Vérification de l'usager nom.\", function () {\r",
+									"    pm.expect(commande.Usager.Nom).to.eql(\"Levesque\");\r",
+									"});\r",
+									"\r",
+									"// Vérification des plats de la commande.\r",
+									"pm.test(\"Commande ne contient pas de plats.\", function () {\r",
+									"    pm.expect(Object.keys(commande.Plats).length).to.eql(0);\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/{{id_dern_commande_creee}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								"{{id_dern_commande_creee}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Consulter une commande (erreure) id invalide",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Requête invalide : 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/:id_commande",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								":id_commande"
+							],
+							"variable": [
+								{
+									"key": "id_commande",
+									"value": "609ea81ee1d35f3a1cdcbb4fr"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Consulter une commande (erreure) n'existe pas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Commande non trouver : 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});\r",
+									"\r",
+									"// nettoyage du token.\r",
+									"pm.environment.set(\"token\", null);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/:id_commande",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								":id_commande"
+							],
+							"variable": [
+								{
+									"key": "id_commande",
+									"value": "609fa81ee1d35f3a1cdabb5f"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Consulter une commande (erreure) non connecté.",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Usager non connecter : 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Aucun Token\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(null);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/:id_commande",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								":id_commande"
+							],
+							"variable": [
+								{
+									"key": "id_commande",
+									"value": "609fa81ee1d35f3a1cdabb5f"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Connexion (réussie)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validation si le code est bien 201.\r",
+									"pm.test(\"Status code est 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"// Récupération du token.\r",
+									"var token = pm.response.json();\r",
+									"\r",
+									"// Validation que le token ne soit pas vide.\r",
+									"pm.test(\"Le Token n'est pas vide.\", function () {\r",
+									"    pm.expect(token).not.eql(null);\r",
+									"});\r",
+									"\r",
+									"// Validation du Token.\r",
+									"pm.test(\"Vérification que le token retourner est différent.\", function () {\r",
+									"    pm.expect(token).not.eql(pm.environment.get(\"token\"));\r",
+									"});\r",
+									"\r",
+									"// Sauvegarde du nouveau token.\r",
+									"pm.environment.set(\"token\", token.token);\r",
+									"\r",
+									"// Validation du Token.\r",
+									"pm.test(\"Vérification du Token a changer.\", function () {\r",
+									"    pm.expect(token.token).to.eql(pm.environment.get(\"token\"));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Nom\": \"Bedard\",\r\n    \"Prenom\": \"Maude\",\r\n    \"Adresse\": \"2342 Rue de la rue\",\r\n    \"Pseudo\": \"roger\",\r\n    \"MotDePasse\": \"1212\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/connexions",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"connexions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "supprimer commande (erreure) 403",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validation du code.\r",
+									"pm.test(\"Id corespond pas au token 403\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token non vide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).not.eql(null);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/usagers/:id_usager/commandes/{{id_dern_livreur_creee}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								":id_usager",
+								"commandes",
+								"{{id_dern_livreur_creee}}"
+							],
+							"variable": [
+								{
+									"key": "id_usager",
+									"value": "6089735911d487119080c7c1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ajouter un livreur (Erreur) 403",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Livreur n'est pas ajouter a la commande code : 403\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token non vide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).not.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"_id\": \"6089800ef749074cb423610b\",\r\n    \"Nom\": \"Légaré\",\r\n    \"Prenom\": \"David\",\r\n    \"Voiture\": \"Pick up\",\r\n    \"__v\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/{{id_dern_commande_creee}}/livreur",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								"{{id_dern_commande_creee}}",
+								"livreur"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Consulter une commande interdit (403)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Id token est différent de lui en paramètre : 403\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation que le token n'est pas vide\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).not.eql(null);\r",
+									"});\r",
+									"\r",
+									"// ajout d'un token valide pour l'usager principale.\r",
+									"pm.environment.set(\"token\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide ajouter\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/usagers/:id_usager/commandes/{{id_dern_commande_creee}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								":id_usager",
+								"commandes",
+								"{{id_dern_commande_creee}}"
+							],
+							"variable": [
+								{
+									"key": "id_usager",
+									"value": "6089735911d487119080c7c1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Consulter plats commade (réussie)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Requête réussi : 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// Commande qui est retourner.\r",
+									"var commande_plats = pm.response.json();\r",
+									"\r",
+									"// Validation du nombre de plats retourner.\r",
+									"pm.test(\"Vérification nombres plats retourner = 0.\", function () {\r",
+									"    pm.expect(commande_plats.length).to.eql(0);\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/{{id_dern_commande_creee}}/plats",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								"{{id_dern_commande_creee}}",
+								"plats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ajouter un plat  (existe pas - Réussie)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Plat est créé et ajouté status code : 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"var commande = pm.response.json();\r",
+									"\r",
+									"// Sauvegarde de l'id du plat créé.\r",
+									"pm.environment.set(\"id_dern_plat_creee\", \"608998a15e516d3154876bd7\");\r",
+									"\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// chargement du schema json.\r",
+									"var jsonSchemaCommande = JSON.parse(pm.environment.get(\"json_schema_commande\"));\r",
+									"\r",
+									"// Validation selon le schéma de données JSON.\r",
+									"tests[\"JSON respecte le schéma pour une commande\"] = tv4.validate(jsonSchemaCommande, commande);\r",
+									"if (tv4.error !== null)\r",
+									"    console.log(\"Message de validation schéma JSON commande) : \", tv4.error);\r",
+									"\r",
+									"// Validation des données.\r",
+									"pm.test(\"Vérification de l'id commande.\", function () {\r",
+									"    pm.expect(commande._id).to.eql(pm.environment.get(\"id_dern_commande_creee\"));\r",
+									"});\r",
+									"\r",
+									"// Vérification usager commande existe.\r",
+									"pm.test(\"Commande contient un usager.\", function () {\r",
+									"    pm.expect(commande.Usager).not.eql(null);\r",
+									"});\r",
+									"\r",
+									"// Vérifier plats n'est pas null.\r",
+									"pm.test(\"Vérification commande contient un plat.\", function () {\r",
+									"    pm.expect(commande.Plats).not.eql(null);\r",
+									"});\r",
+									"\r",
+									"// Vérification commande contient 1 plat.\r",
+									"pm.test(\"Vérification commande contient un plat.\", function () {\r",
+									"    pm.expect(Object.keys(commande.Plats).length).to.eql(1);\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"_id\":\"608998a15e516d3154876bd7\",\r\n    \"Nom\":\"Soupe\",\r\n    \"NbrPortions\":2,\r\n    \"__v\":0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/{{id_dern_commande_creee}}/plats/:id_plats",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								"{{id_dern_commande_creee}}",
+								"plats",
+								":id_plats"
+							],
+							"variable": [
+								{
+									"key": "id_plats",
+									"value": "608998a15e516d3154876bd7"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ajouter un plat  (Réussie)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Plat est ajouté status code : 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var commande = pm.response.json();\r",
+									"\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// chargement du schema json.\r",
+									"var jsonSchemaCommande = JSON.parse(pm.environment.get(\"json_schema_commande\"));\r",
+									"\r",
+									"// Validation selon le schéma de données JSON.\r",
+									"tests[\"JSON respecte le schéma pour une commande\"] = tv4.validate(jsonSchemaCommande, commande);\r",
+									"if (tv4.error !== null)\r",
+									"    console.log(\"Message de validation schéma JSON commande) : \", tv4.error);\r",
+									"\r",
+									"// Validation des données.\r",
+									"pm.test(\"Vérification de l'id commande.\", function () {\r",
+									"    pm.expect(commande._id).to.eql(pm.environment.get(\"id_dern_commande_creee\"));\r",
+									"});\r",
+									"\r",
+									"// Vérification usager commande existe.\r",
+									"pm.test(\"Commande contient un usager.\", function () {\r",
+									"    pm.expect(commande.Usager).not.eql(null);\r",
+									"});\r",
+									"\r",
+									"// Vérifier plats n'est pas null.\r",
+									"pm.test(\"Vérification commande plats n'est pas null.\", function () {\r",
+									"    pm.expect(commande.Plats).not.eql(null);\r",
+									"});\r",
+									"\r",
+									"// Vérification commande contient 2 plats.\r",
+									"pm.test(\"Vérification commande contient 2 plats.\", function () {\r",
+									"    pm.expect(Object.keys(commande.Plats).length).to.eql(2);\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"_id\":\"608998a15e516d3154876bd7\",\r\n    \"Nom\":\"Soupe\",\r\n    \"NbrPortions\":2,\r\n    \"__v\":0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/{{id_dern_commande_creee}}/plats/:id_plats",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								"{{id_dern_commande_creee}}",
+								"plats",
+								":id_plats"
+							],
+							"variable": [
+								{
+									"key": "id_plats",
+									"value": "608998a15e516d3154876bd7"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ajouter un plat  (Erreure)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Plat n'est pas ajouter status code : 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"_id\":\"608998a15e516d3154876bd7\",\r\n    \"Nom\":\"Soupe\",\r\n    \"__v\":0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/{{id_dern_commande_creee}}/plats/{{id_dern_plat_creee}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								"{{id_dern_commande_creee}}",
+								"plats",
+								"{{id_dern_plat_creee}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "supprimer plats commande (erreure) invalide",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validation du code.\r",
+									"pm.test(\"Requete invalide 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/{{id_dern_commande_creee}}/plats/:id_plat",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								"{{id_dern_commande_creee}}",
+								"plats",
+								":id_plat"
+							],
+							"variable": [
+								{
+									"key": "id_plat",
+									"value": "608998a15e516d3154876bd73"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "supprimer plats commande",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validation du code.\r",
+									"pm.test(\"Supprimer le plat 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/{{id_dern_commande_creee}}/plats/{{id_dern_plat_creee}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								"{{id_dern_commande_creee}}",
+								"plats",
+								"{{id_dern_plat_creee}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer plat créé",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validation du code.\r",
+									"pm.test(\"Supprimer le plat 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/plats/{{id_dern_plat_creee}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"plats",
+								"{{id_dern_plat_creee}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ajouter un livreur (existe pas - réussie)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Livreur est créé et ajouté status code : 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"var commande = pm.response.json();\r",
+									"\r",
+									"// Sauvegarde de l'id du livreur créé.\r",
+									"pm.environment.set(\"id_dern_livreur_creee\", \"6089800ef749074cb423610b\");\r",
+									"\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// chargement du schema json.\r",
+									"var jsonSchemaCommande = JSON.parse(pm.environment.get(\"json_schema_commande\"));\r",
+									"\r",
+									"// Validation selon le schéma de données JSON.\r",
+									"tests[\"JSON respecte le schéma pour une commande\"] = tv4.validate(jsonSchemaCommande, commande);\r",
+									"if (tv4.error !== null)\r",
+									"    console.log(\"Message de validation schéma JSON commande) : \", tv4.error);\r",
+									"\r",
+									"// Validation des données.\r",
+									"pm.test(\"Vérification de l'id commande.\", function () {\r",
+									"    pm.expect(commande._id).to.eql(pm.environment.get(\"id_dern_commande_creee\"));\r",
+									"});\r",
+									"\r",
+									"// Vérification usager commande existe.\r",
+									"pm.test(\"Commande contient un usager.\", function () {\r",
+									"    pm.expect(commande.Usager).not.eql(null);\r",
+									"});\r",
+									"\r",
+									"// Vérifier Livreur n'est pas null.\r",
+									"pm.test(\"Vérification livreur de la commande n'est pas null.\", function () {\r",
+									"    pm.expect(commande.Livreur).not.eql(null);\r",
+									"});\r",
+									"\r",
+									"// Vérification id du livreur de la commande\r",
+									"pm.test(\"Vérification de l'id du livreur de la commande.\", function () {\r",
+									"    pm.expect(commande.Livreur._id).to.eql(pm.environment.get(\"id_dern_livreur_creee\"));\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"_id\": \"6089800ef749074cb423610b\",\r\n    \"Nom\": \"Légaré\",\r\n    \"Prenom\": \"David\",\r\n    \"Voiture\": \"Pick up\",\r\n    \"Quartier\": \"Val-Bélair\",\r\n    \"__v\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/{{id_dern_commande_creee}}/livreur",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								"{{id_dern_commande_creee}}",
+								"livreur"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ajouter un livreur (Réussie)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Plat est ajouté status code : 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var commande = pm.response.json();\r",
+									"\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type est present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// chargement du schema json.\r",
+									"var jsonSchemaCommande = JSON.parse(pm.environment.get(\"json_schema_commande\"));\r",
+									"\r",
+									"// Validation selon le schéma de données JSON.\r",
+									"tests[\"JSON respecte le schéma pour une commande\"] = tv4.validate(jsonSchemaCommande, commande);\r",
+									"if (tv4.error !== null)\r",
+									"    console.log(\"Message de validation schéma JSON commande) : \", tv4.error);\r",
+									"\r",
+									"// Validation des données.\r",
+									"pm.test(\"Vérification de l'id commande.\", function () {\r",
+									"    pm.expect(commande._id).to.eql(pm.environment.get(\"id_dern_commande_creee\"));\r",
+									"});\r",
+									"\r",
+									"// Vérification usager commande existe.\r",
+									"pm.test(\"Commande contient un usager.\", function () {\r",
+									"    pm.expect(commande.Usager).not.eql(null);\r",
+									"});\r",
+									"\r",
+									"// Vérifier Livreur n'est pas null.\r",
+									"pm.test(\"Vérification livreur de la commande n'est pas null.\", function () {\r",
+									"    pm.expect(commande.Livreur).not.eql(null);\r",
+									"});\r",
+									"\r",
+									"// Vérification id du livreur de la commande\r",
+									"pm.test(\"Vérification de l'id du livreur de la commande.\", function () {\r",
+									"    pm.expect(commande.Livreur._id).to.eql(\"6091a607a4b2c46324cb934b\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"_id\": \"6091a607a4b2c46324cb934b\",\r\n    \"Nom\": \"Bédard\",\r\n    \"Prenom\": \"Antoine\",\r\n    \"Voiture\": \"Yaris 2006 SPORT\",\r\n    \"Quartier\": \"Val-Bélair\",\r\n    \"__v\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/{{id_dern_commande_creee}}/livreur",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								"{{id_dern_commande_creee}}",
+								"livreur"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ajouter un livreur (Erreure) invalide",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Mauvaise requete 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"_id\": \"6091a607a4b2c46324cb934b\",\r\n    \"Nom\": \"Bédard\",\r\n    \"Prenom\": \"Antoine\",\r\n    \"Quartier\": \"Val-Bélair\",\r\n    \"__v\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/{{id_dern_commande_creee}}/livreur",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								"{{id_dern_commande_creee}}",
+								"livreur"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "modification de la derniere commande créé",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"modification commande code : 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Récupération de la commande qui est retourner.\r",
+									"var commande = pm.response.json();\r",
+									"\r",
+									"// vérification si le content-type est present\r",
+									"pm.test(\"Content-Type est present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"// chargement du schema json.\r",
+									"var jsonSchemaCommande = JSON.parse(pm.environment.get(\"json_schema_commande\"));\r",
+									"\r",
+									"// Validation selon le schéma de données JSON.\r",
+									"tests[\"JSON respecte le schéma pour une commande\"] = tv4.validate(jsonSchemaCommande, commande);\r",
+									"if (tv4.error !== null)\r",
+									"    console.log(\"Message de validation schéma JSON commande) : \", tv4.error);\r",
+									"\r",
+									"// Validation des données.\r",
+									"pm.test(\"Vérification de l'id commande.\", function () {\r",
+									"    pm.expect(commande._id).to.eql(pm.environment.get(\"id_dern_commande_creee\"));\r",
+									"});\r",
+									"\r",
+									"// Vérification usager commande existe.\r",
+									"pm.test(\"Commande contient un usager.\", function () {\r",
+									"    pm.expect(commande.Usager).not.eql(null);\r",
+									"});\r",
+									"\r",
+									"// Vérification du changement de date.\r",
+									"pm.test(\"Vérification de la nouvelle date de la commande.\", function () {\r",
+									"    pm.expect(new Date(commande.DateArrivee)).to.eql(new Date(\"1998-10-01\"));\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"DateArrivee\": \"1998-10-01\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/{{id_dern_commande_creee}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								"{{id_dern_commande_creee}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "modification commande interdite (erreure) 403",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Commande date et Livreur modifier : 403\", function () {\r",
+									"    pm.response.to.have.status(403);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"DateArrivee\": \"1998-10-01\",\r\n    \"Livreur\": {\r\n        \"_id\": \"6091a607a4b2c46324cb934b\",\r\n        \"Nom\": \"Bédard\",\r\n        \"Prenom\": \"Antoine\",\r\n        \"Voiture\": \"Yaris 2006 SPORT\",\r\n        \"Quartier\": \"Val-Bélair\",\r\n        \"__v\": 0\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/{{id_dern_commande_creee}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								"{{id_dern_commande_creee}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "modification commande (erreure) requete invalide",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Mauvaise requete : 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});\r",
+									"\r",
+									"// nettoyage du token.\r",
+									"pm.environment.set(\"token\", null);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"DateArrivee\": \"1998-10-01\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/:id_commande",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								":id_commande"
+							],
+							"variable": [
+								{
+									"key": "id_commande",
+									"value": "609ea81ee1d35f3a1cdcbb4fe"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "modification commande (erreure) non connecter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Usager non connecter : 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Aucun Token\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(null);\r",
+									"});\r",
+									"\r",
+									"// ajout d'un token valide pour l'usager principale.\r",
+									"pm.environment.set(\"token\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide ajouter\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"DateArrivee\": \"1998-10-01\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/{{id_dern_commande_creee}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								"{{id_dern_commande_creee}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "supprimer commande",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validation du code.\r",
+									"pm.test(\"Supprimer la commande 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/{{id_dern_commande_creee}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								"{{id_dern_commande_creee}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "supprimer commande (erreure) invalide",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validation du code.\r",
+									"pm.test(\"Mauvaise requete 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});\r",
+									"\r",
+									"// nettoyage du token.\r",
+									"pm.environment.set(\"token\", null);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/:id_commande",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								":id_commande"
+							],
+							"variable": [
+								{
+									"key": "id_commande",
+									"value": "609eba51c062df4d9c8079ebw"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "supprimer commande (erreure) non Connecter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validation du code.\r",
+									"pm.test(\"Usager non connecter 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(null);\r",
+									"});\r",
+									"\r",
+									"// ajout d'un token valide pour l'usager principale.\r",
+									"pm.environment.set(\"token\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide ajouter\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/usagers/{{id_dern_usager_connecter}}/commandes/{{id_dern_commande_creee}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"usagers",
+								"{{id_dern_usager_connecter}}",
+								"commandes",
+								"{{id_dern_commande_creee}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Supprimer livreur créé (Réussie)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Validation du code.\r",
+									"pm.test(\"Supprimer le livreur 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"\r",
+									"// Vérifier body est vide.\r",
+									"pm.test(\"Vérification body est vide.\", function () {\r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});\r",
+									"\r",
+									"// Validation du token\r",
+									"pm.test(\"Token valide\", function () {\r",
+									"    var token = pm.environment.get(\"token\");\r",
+									"    pm.expect(token).to.eql(\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2FnZXJDb25uZWN0ZXJJRCI6IjYwODk3MzU5MTFkNDg3MTE5MDgwYzdjMSIsImlhdCI6MTYyMDE1NjgyNywiZXhwIjoxNjM1NjU2ODI3fQ.ECl3fCOf2LyZdyAAMqjUW-8OwOcE7M8oJ7nHVUw7cw4\");\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_base}}/livreurs/{{id_dern_livreur_creee}}",
+							"host": [
+								"{{url_base}}"
+							],
+							"path": [
+								"livreurs",
+								"{{id_dern_livreur_creee}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
